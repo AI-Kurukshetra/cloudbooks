@@ -7,6 +7,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "CloudBooks Pro",
   description: "CloudBooks Pro accounting operations platform",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

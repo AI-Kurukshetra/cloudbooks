@@ -6,30 +6,36 @@ import { usePathname } from "next/navigation";
 import {
   ArrowUpRight,
   Banknote,
+  BarChart3,
+  BookText,
   Building2,
   BriefcaseBusiness,
-  ChartColumn,
-  FileText,
+  FileSpreadsheet,
+  HandCoins,
   Landmark,
+  LayoutDashboard,
   Package,
-  Receipt,
+  Truck,
+  UserRound,
   Settings,
-  Users,
   Wallet,
+  LogOut,
 } from "lucide-react";
 
+import { signOutAction } from "@/app/(dashboard)/actions";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navigation = [
-  { href: "/dashboard", label: "Dashboard", icon: ChartColumn },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/entities", label: "Entities", icon: Building2 },
   { href: "/accounts", label: "Accounts", icon: Landmark },
-  { href: "/journal", label: "Journal", icon: FileText },
-  { href: "/invoices", label: "Invoices", icon: Receipt },
-  { href: "/bills", label: "Bills", icon: Receipt },
-  { href: "/vendors", label: "Vendors", icon: Users },
-  { href: "/customers", label: "Customers", icon: Users },
-  { href: "/reports", label: "Reports", icon: FileText },
+  { href: "/journal", label: "Journal", icon: BookText },
+  { href: "/invoices", label: "Invoices", icon: FileSpreadsheet },
+  { href: "/bills", label: "Bills", icon: HandCoins },
+  { href: "/vendors", label: "Vendors", icon: Truck },
+  { href: "/customers", label: "Customers", icon: UserRound },
+  { href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/banking", label: "Banking", icon: Banknote },
   { href: "/projects", label: "Projects", icon: BriefcaseBusiness },
   { href: "/assets", label: "Assets", icon: Package },
@@ -43,9 +49,6 @@ export function AppShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const activeItem =
-    navigation.find((item) => pathname === item.href || (item.href !== "/dashboard" && pathname?.startsWith(`${item.href}/`))) ??
-    navigation[0];
 
   return (
     <div className="app-mesh min-h-screen">
@@ -95,6 +98,15 @@ export function AppShell({
             <p className="mt-3 text-sm leading-6 text-stone-300">
               Every operational document resolves to journal lines with tenant-scoped access and audit traceability.
             </p>
+            <form action={signOutAction} className="mt-5">
+              <Button
+                type="submit"
+                className="w-full justify-center border-white/10 bg-white/10 text-white hover:bg-white/16"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </form>
           </div>
         </aside>
         <main className="space-y-6">
