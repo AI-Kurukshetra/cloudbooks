@@ -2,8 +2,24 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createFiscalPeriod, createTaxRate } from "@/services/operations";
-import type { CreateFiscalPeriodInput, CreateTaxRateInput } from "@/validators/operations";
+import {
+  createCustomField,
+  createDepartment,
+  createFiscalPeriod,
+  createNotificationRule,
+  createTaxRate,
+  createVatReturn,
+  createWorkflowDefinition,
+} from "@/services/operations";
+import type {
+  CreateCustomFieldInput,
+  CreateDepartmentInput,
+  CreateFiscalPeriodInput,
+  CreateNotificationRuleInput,
+  CreateTaxRateInput,
+  CreateVatReturnInput,
+  CreateWorkflowDefinitionInput,
+} from "@/validators/operations";
 
 export async function createTaxRateAction(input: CreateTaxRateInput) {
   const result = await createTaxRate(input);
@@ -20,5 +36,36 @@ export async function createFiscalPeriodAction(input: CreateFiscalPeriodInput) {
   revalidatePath("/invoices");
   revalidatePath("/bills");
   revalidatePath("/budgets");
+  return result;
+}
+
+export async function createVatReturnAction(input: CreateVatReturnInput) {
+  const result = await createVatReturn(input);
+  revalidatePath("/settings");
+  revalidatePath("/reports");
+  return result;
+}
+
+export async function createDepartmentAction(input: CreateDepartmentInput) {
+  const result = await createDepartment(input);
+  revalidatePath("/settings");
+  return result;
+}
+
+export async function createCustomFieldAction(input: CreateCustomFieldInput) {
+  const result = await createCustomField(input);
+  revalidatePath("/settings");
+  return result;
+}
+
+export async function createWorkflowDefinitionAction(input: CreateWorkflowDefinitionInput) {
+  const result = await createWorkflowDefinition(input);
+  revalidatePath("/settings");
+  return result;
+}
+
+export async function createNotificationRuleAction(input: CreateNotificationRuleInput) {
+  const result = await createNotificationRule(input);
+  revalidatePath("/settings");
   return result;
 }

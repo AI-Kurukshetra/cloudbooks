@@ -31,19 +31,27 @@ export function RecentDocumentsCard({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {documents.map((document) => (
-              <TableRow key={document.id}>
-                <TableCell>{document.number}</TableCell>
-                <TableCell>{document.party}</TableCell>
-                <TableCell>{formatDate(document.date)}</TableCell>
-                <TableCell>{formatCurrency(document.amount)}</TableCell>
-                <TableCell>
-                  <Badge variant={document.status === "approved" || document.status === "paid" ? "success" : "outline"}>
-                    {document.status}
-                  </Badge>
+            {documents.length === 0 ? (
+              <TableRow>
+                <TableCell className="py-10 text-sm text-muted-foreground" colSpan={5}>
+                  No documents available.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              documents.map((document) => (
+                <TableRow key={document.id}>
+                  <TableCell>{document.number}</TableCell>
+                  <TableCell>{document.party}</TableCell>
+                  <TableCell>{formatDate(document.date)}</TableCell>
+                  <TableCell>{formatCurrency(document.amount)}</TableCell>
+                  <TableCell>
+                    <Badge variant={document.status === "approved" || document.status === "paid" ? "success" : "outline"}>
+                      {document.status}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </CardContent>

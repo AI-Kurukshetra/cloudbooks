@@ -687,6 +687,92 @@ export type Database = {
           jurisdiction?: string | null;
         }
       >;
+      departments: TableDefinition<
+        BaseRow & {
+          organization_id: UUID;
+          entity_id: UUID;
+          name: string;
+          code: string;
+          manager_name: string | null;
+          status: string;
+        },
+        BaseInsert & {
+          organization_id: UUID;
+          entity_id: UUID;
+          name: string;
+          code: string;
+          manager_name?: string | null;
+          status?: string;
+        }
+      >;
+      custom_fields: TableDefinition<
+        BaseRow & {
+          organization_id: UUID;
+          entity_id: UUID;
+          module_name: string;
+          field_key: string;
+          field_label: string;
+          field_type: string;
+          options: Json;
+          is_required: boolean;
+          status: string;
+        },
+        BaseInsert & {
+          organization_id: UUID;
+          entity_id: UUID;
+          module_name: string;
+          field_key: string;
+          field_label: string;
+          field_type: string;
+          options?: Json;
+          is_required?: boolean;
+          status?: string;
+        }
+      >;
+      workflow_definitions: TableDefinition<
+        BaseRow & {
+          organization_id: UUID;
+          entity_id: UUID;
+          workflow_name: string;
+          module_name: string;
+          trigger_event: string;
+          approval_role: string;
+          auto_approve_below: number | null;
+          status: string;
+        },
+        BaseInsert & {
+          organization_id: UUID;
+          entity_id: UUID;
+          workflow_name: string;
+          module_name: string;
+          trigger_event: string;
+          approval_role: string;
+          auto_approve_below?: number | null;
+          status?: string;
+        }
+      >;
+      notification_rules: TableDefinition<
+        BaseRow & {
+          organization_id: UUID;
+          entity_id: UUID;
+          rule_name: string;
+          event_key: string;
+          channel: string;
+          recipient_role: string;
+          is_enabled: boolean;
+          status: string;
+        },
+        BaseInsert & {
+          organization_id: UUID;
+          entity_id: UUID;
+          rule_name: string;
+          event_key: string;
+          channel: string;
+          recipient_role: string;
+          is_enabled?: boolean;
+          status?: string;
+        }
+      >;
       documents: TableDefinition<
         BaseRow & {
           organization_id: UUID;

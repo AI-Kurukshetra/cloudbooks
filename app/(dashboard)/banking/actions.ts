@@ -4,11 +4,13 @@ import { revalidatePath } from "next/cache";
 
 import {
   createBankAccount,
+  createBankCategorizationRule,
   createBankTransaction,
   createReconciliation,
 } from "@/services/operations";
 import type {
   CreateBankAccountInput,
+  CreateBankCategorizationRuleInput,
   CreateBankTransactionInput,
   CreateReconciliationInput,
 } from "@/validators/operations";
@@ -24,6 +26,12 @@ export async function createBankTransactionAction(input: CreateBankTransactionIn
   const result = await createBankTransaction(input);
   revalidatePath("/banking");
   revalidatePath("/dashboard");
+  return result;
+}
+
+export async function createBankCategorizationRuleAction(input: CreateBankCategorizationRuleInput) {
+  const result = await createBankCategorizationRule(input);
+  revalidatePath("/banking");
   return result;
 }
 

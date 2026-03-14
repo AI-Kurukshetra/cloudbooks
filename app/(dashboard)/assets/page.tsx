@@ -1,9 +1,11 @@
 import { AssetRegistryManager } from "@/components/assets/asset-registry-manager";
+import { InventoryManager } from "@/components/assets/inventory-manager";
 import {
   deleteAssetDocumentAction,
   uploadAssetDocumentAction,
 } from "@/app/(dashboard)/assets/actions";
 import { DocumentAttachmentPanel } from "@/components/workbench/document-attachment-panel";
+import { RecordsTableCard } from "@/components/master-data/records-table-card";
 import { WorkbenchPanel } from "@/components/workbench/workbench-panel";
 import { requireActiveMembership } from "@/services/auth";
 import { getAssetsWorkbench } from "@/services/operations";
@@ -21,6 +23,12 @@ export default async function AssetsPage() {
       >
         <AssetRegistryManager data={data} />
       </WorkbenchPanel>
+      <InventoryManager data={data} />
+      <RecordsTableCard
+        title="Inventory register"
+        description="Current inventory items and calculated quantity on hand."
+        rows={data.inventoryRecords}
+      />
       <DocumentAttachmentPanel
         title="Asset documents"
         description="Attach purchase orders, vendor invoices, warranty files, and onboarding paperwork to assets in the register."

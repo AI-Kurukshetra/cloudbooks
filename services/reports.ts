@@ -3,7 +3,6 @@ import type { MembershipContext } from "@/services/auth";
 import type {
   BalanceSheetSnapshot,
   ProfitAndLossSnapshot,
-  ReportCatalogItem,
   ReportingWorkspaceSummary,
   StatementLine,
   TrialBalanceRow,
@@ -135,53 +134,6 @@ function toStatementLines(rows: LedgerBalance[]) {
       }),
     )
     .filter((row) => Math.abs(row.amount) > 0.0001);
-}
-
-export async function getReportCatalog() {
-  return [
-    {
-      id: "profit-loss",
-      title: "Profit & Loss",
-      description: "Year-to-date operating performance from posted journal activity.",
-      cadence: "Refreshes on every posting",
-      status: "live",
-    },
-    {
-      id: "balance-sheet",
-      title: "Balance Sheet",
-      description: "As-of financial position across assets, liabilities, and equity.",
-      cadence: "Point-in-time snapshot",
-      status: "live",
-    },
-    {
-      id: "trial-balance",
-      title: "Trial Balance",
-      description: "Full ledger balancing report with debit and credit totals.",
-      cadence: "Point-in-time snapshot",
-      status: "live",
-    },
-    {
-      id: "cash-flow",
-      title: "Cash Flow",
-      description: "Indirect-method operating, investing, and financing movement.",
-      cadence: "Next reporting release",
-      status: "queued",
-    },
-    {
-      id: "aging",
-      title: "AR / AP Aging",
-      description: "Receivables and payables maturity analysis by counterparty.",
-      cadence: "Next reporting release",
-      status: "queued",
-    },
-    {
-      id: "budget-variance",
-      title: "Budget vs Actual",
-      description: "Budget line performance against posted actuals by period.",
-      cadence: "Next planning release",
-      status: "queued",
-    },
-  ] satisfies ReportCatalogItem[];
 }
 
 export async function getReportingWorkspaceSummary(

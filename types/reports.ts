@@ -47,14 +47,6 @@ export type BalanceSheetSnapshot = {
   };
 };
 
-export type ReportCatalogItem = {
-  id: string;
-  title: string;
-  description: string;
-  cadence: string;
-  status: "live" | "queued";
-};
-
 export type ReportingWorkspaceSummary = {
   entityScopeLabel: string;
   activeEntityCount: number;

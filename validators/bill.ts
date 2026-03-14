@@ -22,7 +22,7 @@ export const createBillSchema = z.object({
   dueDate: z.string().min(1),
   currencyCode: z.string().length(3),
   apAccountId: z.string().uuid(),
-  taxLiabilityAccountId: z.string().uuid().optional(),
+  taxAccountId: z.string().uuid().optional(),
   lines: z.array(billLineSchema).min(1),
 }).refine(
   (value) => value.lines.reduce((sum, line) => sum + line.quantity * line.unitCost, 0) > 0,

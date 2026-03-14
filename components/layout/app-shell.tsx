@@ -39,41 +39,24 @@ const navigation = [
 
 export function AppShell({
   children,
-  title,
 }: {
   children: ReactNode;
-  title: string;
 }) {
   const pathname = usePathname();
   const activeItem =
     navigation.find((item) => pathname === item.href || (item.href !== "/dashboard" && pathname?.startsWith(`${item.href}/`))) ??
     navigation[0];
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date());
 
   return (
     <div className="app-mesh min-h-screen">
       <div className="mx-auto grid min-h-screen max-w-[1600px] gap-6 px-4 py-4 lg:grid-cols-[300px_1fr] xl:px-6">
         <aside className="flex flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(34,197,94,0.14),_transparent_24%),radial-gradient(circle_at_top_right,_rgba(249,115,22,0.18),_transparent_26%),linear-gradient(180deg,_rgba(19,27,33,0.98),_rgba(24,35,43,0.96))] p-5 text-stone-100 shadow-luxe">
-          <div className="mb-8 rounded-[1.6rem] border border-white/10 bg-white/5 p-5 backdrop-blur">
+          <div className="mb-8 rounded-[1.6rem] border border-white/10 bg-white/5 p-5">
             <p className="text-[11px] uppercase tracking-[0.36em] text-cyan-100/70">Accounting System</p>
             <h1 className="mt-3 font-display text-3xl font-semibold leading-none">CloudBooks Pro</h1>
             <p className="mt-3 text-sm leading-6 text-stone-300/85">
               Multi-entity ledger, subledgers, banking, and reporting in one tenant-scoped system.
             </p>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-3">
-                <p className="text-[10px] uppercase tracking-[0.28em] text-stone-400">Active Module</p>
-                <p className="mt-2 text-sm font-medium text-stone-100">{activeItem.label}</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-3">
-                <p className="text-[10px] uppercase tracking-[0.28em] text-stone-400">Modules</p>
-                <p className="mt-2 text-sm font-medium text-stone-100">{navigation.length} live routes</p>
-              </div>
-            </div>
           </div>
           <nav className="flex-1 space-y-1 overflow-y-auto pr-1">
             {navigation.map((item) => {
@@ -115,31 +98,6 @@ export function AppShell({
           </div>
         </aside>
         <main className="space-y-6">
-          <header className="overflow-hidden rounded-[2rem] border border-white/60 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.95),_rgba(255,255,255,0.74)_46%,_rgba(254,243,199,0.6)),linear-gradient(135deg,_rgba(255,255,255,0.82),_rgba(248,250,252,0.75))] p-6 shadow-soft backdrop-blur">
-            <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.34em] text-muted-foreground">Application</p>
-                <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-slate-900">{title}</h2>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-                  Use the active module to manage records, post transactions, and review financial output for the current tenant scope.
-                </p>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl border border-white/70 bg-white/70 px-4 py-3 backdrop-blur">
-                  <p className="text-[10px] uppercase tracking-[0.26em] text-muted-foreground">Section</p>
-                  <p className="mt-2 text-sm font-medium text-slate-900">{activeItem.label}</p>
-                </div>
-                <div className="rounded-2xl border border-white/70 bg-white/70 px-4 py-3 backdrop-blur">
-                  <p className="text-[10px] uppercase tracking-[0.26em] text-muted-foreground">Path</p>
-                  <p className="mt-2 text-sm font-medium text-slate-900">{pathname}</p>
-                </div>
-                <div className="rounded-2xl border border-white/70 bg-white/70 px-4 py-3 backdrop-blur">
-                  <p className="text-[10px] uppercase tracking-[0.26em] text-muted-foreground">Today</p>
-                  <p className="mt-2 text-sm font-medium text-emerald-700">{todayLabel}</p>
-                </div>
-              </div>
-            </div>
-          </header>
           {children}
         </main>
       </div>

@@ -46,12 +46,14 @@ export function InvoiceForm({ data }: { data: InvoiceWorkbenchData }) {
       dueDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString().slice(0, 10),
       currencyCode: data.currencyCode,
       arAccountId: data.arAccounts[0]?.id ?? "",
+      taxAccountId: data.taxAccounts[0]?.id,
       lines: [
         {
           description: "Advisory services retainer",
           quantity: 1,
           unitPrice: 0,
           revenueAccountId: data.revenueAccounts[0]?.id ?? "",
+          taxRateId: data.taxRates[0]?.id,
           projectId: data.projects[0]?.id,
         },
       ],
@@ -69,6 +71,11 @@ export function InvoiceForm({ data }: { data: InvoiceWorkbenchData }) {
     (sum, line) => sum + Number(line.quantity ?? 0) * Number(line.unitPrice ?? 0),
     0,
   );
+  const taxTotal = lines.reduce((sum, line) => {
+    const rate = data.taxRates.find((item) => item.id === line.taxRateId)?.rate ?? 0;
+    return sum + Number(line.quantity ?? 0) * Number(line.unitPrice ?? 0) * rate;
+  }, 0);
+  const total = subtotal + taxTotal;
   const canSubmit = subtotal > 0 && !isPending;
 
   function submit(values: CreateInvoiceInput) {
@@ -81,7 +88,7 @@ export function InvoiceForm({ data }: { data: InvoiceWorkbenchData }) {
         const payload: CreateInvoiceInput = {
           ...values,
           fiscalPeriodId: values.fiscalPeriodId || undefined,
-          taxLiabilityAccountId: values.taxLiabilityAccountId || undefined,
+          taxAccountId: values.taxAccountId || undefined,
           lines: values.lines.map((line) => ({
             ...line,
             taxRateId: line.taxRateId || undefined,
@@ -102,6 +109,7 @@ export function InvoiceForm({ data }: { data: InvoiceWorkbenchData }) {
               quantity: 1,
               unitPrice: 0,
               revenueAccountId: data.revenueAccounts[0]?.id ?? "",
+              taxRateId: data.taxRates[0]?.id,
               projectId: data.projects[0]?.id,
             },
           ],
@@ -175,6 +183,18 @@ export function InvoiceForm({ data }: { data: InvoiceWorkbenchData }) {
                   {fieldError(errors.arAccountId?.message)}
                 </div>
                 <div className="space-y-2">
+                  <label className="text-sm font-medium">Tax account</label>
+                  <Select {...form.register("taxAccountId")}>
+                    <option value="">None</option>
+                    {data.taxAccounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.label}
+                      </option>
+                    ))}
+                  </Select>
+                  {fieldError(errors.taxAccountId?.message as string | undefined)}
+                </div>
+                <div className="space-y-2">
                   <label className="text-sm font-medium">Invoice number</label>
                   <Input {...form.register("invoiceNumber")} />
                   {fieldError(errors.invoiceNumber?.message)}
@@ -219,6 +239,7 @@ export function InvoiceForm({ data }: { data: InvoiceWorkbenchData }) {
                       quantity: 1,
                       unitPrice: 0,
                       revenueAccountId: data.revenueAccounts[0]?.id ?? "",
+                      taxRateId: data.taxRates[0]?.id,
                       projectId: data.projects[0]?.id,
                     })
                   }
@@ -269,6 +290,18 @@ export function InvoiceForm({ data }: { data: InvoiceWorkbenchData }) {
                             ))}
                           </Select>
                           {fieldError(errors.lines?.[index]?.projectId?.message as string | undefined)}
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Tax rate</label>
+                          <Select {...form.register(`lines.${index}.taxRateId`)}>
+                            <option value="">None</option>
+                            {data.taxRates.map((taxRate) => (
+                              <option key={taxRate.id} value={taxRate.id}>
+                                {taxRate.label}
+                              </option>
+                            ))}
+                          </Select>
+                          {fieldError(errors.lines?.[index]?.taxRateId?.message as string | undefined)}
                         </div>
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Quantity</label>
@@ -329,7 +362,11 @@ export function InvoiceForm({ data }: { data: InvoiceWorkbenchData }) {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span>Total posting</span>
-                  <span>{formatCurrency(subtotal, data.currencyCode)}</span>
+                  <span>{formatCurrency(total, data.currencyCode)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span>Tax</span>
+                  <span>{formatCurrency(taxTotal, data.currencyCode)}</span>
                 </div>
               </div>
               {submitError ? <p className="mt-4 text-sm text-destructive">{submitError}</p> : null}

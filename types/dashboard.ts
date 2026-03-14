@@ -4,6 +4,12 @@ export type DashboardSnapshot = {
   kpis: { label: string; value: string; change: string }[];
   revenueSeries: { label: string; value: number }[];
   cashSeries: { label: string; value: number }[];
+  cashForecast: {
+    period: string;
+    inflows: number;
+    outflows: number;
+    endingCash: number;
+  }[];
   trendSeries: { period: string; revenue: number; expenses: number; netIncome: number }[];
   receivablesAging: { label: string; value: number }[];
   payablesAging: { label: string; value: number }[];

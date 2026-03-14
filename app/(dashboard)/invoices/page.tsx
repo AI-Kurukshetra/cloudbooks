@@ -2,6 +2,12 @@ import {
   deleteInvoiceDocumentAction,
   uploadInvoiceDocumentAction,
 } from "@/app/(dashboard)/invoices/actions";
+import {
+  EstimateConversionCard,
+  EstimateForm,
+  ReminderActivityCard,
+  ReminderSchedulerCard,
+} from "@/components/invoices/commercial-workflows";
 import { InvoiceForm } from "@/components/forms/invoice-form";
 import { DocumentAttachmentPanel } from "@/components/workbench/document-attachment-panel";
 import { RecentDocumentsCard } from "@/components/workbench/recent-documents-card";
@@ -22,12 +28,27 @@ export default async function InvoicesPage() {
       >
         <InvoiceForm data={data} />
       </WorkbenchPanel>
+      <div className="grid gap-6 xl:grid-cols-2">
+        <EstimateForm data={data} />
+        <EstimateConversionCard data={data} />
+      </div>
+      <div className="grid gap-6 xl:grid-cols-2">
+        <ReminderSchedulerCard data={data} />
+        <ReminderActivityCard data={data} />
+      </div>
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <RecentDocumentsCard
           title="Recent invoices"
           description="Latest invoice activity for the active entity."
           documents={data.recentInvoices}
         />
+        <RecentDocumentsCard
+          title="Recent estimates"
+          description="Open quote and estimate activity awaiting customer acceptance or conversion."
+          documents={data.estimates}
+        />
+      </div>
+      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <DocumentAttachmentPanel
           title="Invoice attachments"
           description="Store customer purchase orders, signed SOWs, and invoice backup against the posted invoice record."

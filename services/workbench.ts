@@ -8,6 +8,8 @@ import type {
   LookupOption,
   PeriodOption,
   RecentDocument,
+  ReminderRecord,
+  TaxRateOption,
 } from "@/types/workbench";
 
 function entityFilter<T extends { eq: (column: string, value: string) => T }>(
@@ -46,13 +48,40 @@ function mapPeriodOptions(rows: any[]): PeriodOption[] {
 }
 
 function mapRecentDocuments(rows: any[], numberField: string, partyPath: (row: any) => string): RecentDocument[] {
+  const dateField =
+    numberField.startsWith("invoice")
+      ? "invoice_date"
+      : numberField.startsWith("bill")
+        ? "bill_date"
+        : "estimate_date";
   return rows.map((row) => ({
     id: row.id,
     number: row[numberField],
     party: partyPath(row),
     amount: Number(row.total_amount ?? 0),
     status: row.status,
-    date: row[`${numberField.startsWith("invoice") ? "invoice_date" : "bill_date"}`],
+    date: row[dateField],
+  }));
+}
+
+function mapTaxRates(rows: any[]): TaxRateOption[] {
+  return rows.map((row) => ({
+    id: row.id,
+    label: `${row.tax_code} · ${row.name}`,
+    description: row.jurisdiction ?? null,
+    rate: Number(row.rate ?? 0),
+  }));
+}
+
+function mapReminderRecords(rows: any[]): ReminderRecord[] {
+  return rows.map((row) => ({
+    id: row.id,
+    invoiceNumber: row.invoice?.invoice_number ?? "Invoice",
+    channel: row.delivery_channel,
+    reminderType: row.reminder_type,
+    scheduledFor: row.scheduled_for,
+    status: row.status,
+    payLinkUrl: row.pay_link_token ? `/pay/${row.pay_link_token}` : null,
   }));
 }
 
@@ -70,7 +99,7 @@ export async function getInvoiceWorkbenchData(
         .single()
     : { data: null, error: null };
 
-  const [customersResult, accountsResult, periodsResult, projectsResult, recentInvoicesResult, attachments] =
+  const [customersResult, accountsResult, periodsResult, projectsResult, recentInvoicesResult, estimatesResult, remindersResult, taxRatesResult, attachments] =
     await Promise.all([
       entityFilter(
         db
@@ -118,6 +147,32 @@ export async function getInvoiceWorkbenchData(
           .limit(6),
         membership.entityId,
       ),
+      entityFilter(
+        db
+          .from("estimates")
+          .select("id, estimate_number, estimate_date, total_amount, status, customer:customers(display_name)")
+          .eq("organization_id", membership.organizationId)
+          .order("estimate_date", { ascending: false })
+          .limit(6),
+        membership.entityId,
+      ),
+      entityFilter(
+        db
+          .from("invoice_reminders")
+          .select("id, reminder_type, delivery_channel, scheduled_for, status, pay_link_token, invoice:invoices(invoice_number)")
+          .eq("organization_id", membership.organizationId)
+          .order("scheduled_for", { ascending: false })
+          .limit(8),
+        membership.entityId,
+      ),
+      entityFilter(
+        db
+          .from("tax_rates")
+          .select("id, name, tax_code, rate, jurisdiction")
+          .eq("organization_id", membership.organizationId)
+          .order("name", { ascending: true }),
+        membership.entityId,
+      ),
       listDocumentsForTable(membership, "invoices"),
     ]);
 
@@ -128,6 +183,9 @@ export async function getInvoiceWorkbenchData(
     periodsResult.error,
     projectsResult.error,
     recentInvoicesResult.error,
+    estimatesResult.error,
+    remindersResult.error,
+    taxRatesResult.error,
   ].filter(Boolean);
 
   if (errors.length > 0) {
@@ -143,6 +201,8 @@ export async function getInvoiceWorkbenchData(
     customers: mapLookupOptions(customersResult.data ?? [], "display_name", "customer_code"),
     arAccounts: mapAccountOptions(accountRows.filter((row: any) => row.account_type === "asset")),
     revenueAccounts: mapAccountOptions(accountRows.filter((row: any) => row.account_type === "revenue")),
+    taxAccounts: mapAccountOptions(accountRows.filter((row: any) => ["liability", "asset"].includes(row.account_type))),
+    taxRates: mapTaxRates(taxRatesResult.data ?? []),
     periods: mapPeriodOptions(periodsResult.data ?? []),
     projects: mapLookupOptions(projectsResult.data ?? [], "name", "project_code"),
     recentInvoices: mapRecentDocuments(
@@ -150,6 +210,12 @@ export async function getInvoiceWorkbenchData(
       "invoice_number",
       (row) => row.customer?.display_name ?? "Customer",
     ),
+    estimates: mapRecentDocuments(
+      estimatesResult.data ?? [],
+      "estimate_number",
+      (row) => row.customer?.display_name ?? "Customer",
+    ),
+    reminders: mapReminderRecords(remindersResult.data ?? []),
     attachments,
   };
 }
@@ -168,7 +234,7 @@ export async function getBillWorkbenchData(
         .single()
     : { data: null, error: null };
 
-  const [vendorsResult, accountsResult, periodsResult, projectsResult, recentBillsResult, attachments] =
+  const [vendorsResult, accountsResult, periodsResult, projectsResult, recentBillsResult, taxRatesResult, attachments] =
     await Promise.all([
       entityFilter(
         db
@@ -216,6 +282,14 @@ export async function getBillWorkbenchData(
           .limit(6),
         membership.entityId,
       ),
+      entityFilter(
+        db
+          .from("tax_rates")
+          .select("id, name, tax_code, rate, jurisdiction")
+          .eq("organization_id", membership.organizationId)
+          .order("name", { ascending: true }),
+        membership.entityId,
+      ),
       listDocumentsForTable(membership, "bills"),
     ]);
 
@@ -226,6 +300,7 @@ export async function getBillWorkbenchData(
     periodsResult.error,
     projectsResult.error,
     recentBillsResult.error,
+    taxRatesResult.error,
   ].filter(Boolean);
 
   if (errors.length > 0) {
@@ -241,6 +316,8 @@ export async function getBillWorkbenchData(
     vendors: mapLookupOptions(vendorsResult.data ?? [], "display_name", "vendor_code"),
     apAccounts: mapAccountOptions(accountRows.filter((row: any) => row.account_type === "liability")),
     expenseAccounts: mapAccountOptions(accountRows.filter((row: any) => row.account_type === "expense")),
+    taxAccounts: mapAccountOptions(accountRows.filter((row: any) => row.account_type === "asset")),
+    taxRates: mapTaxRates(taxRatesResult.data ?? []),
     periods: mapPeriodOptions(periodsResult.data ?? []),
     projects: mapLookupOptions(projectsResult.data ?? [], "name", "project_code"),
     recentBills: mapRecentDocuments(

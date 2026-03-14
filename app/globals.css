@@ -29,10 +29,6 @@
   @apply border-border;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   @apply bg-background text-foreground antialiased;
   font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
@@ -62,11 +58,12 @@ h6 {
 
 .app-mesh {
   position: relative;
+  isolation: isolate;
 }
 
 .app-mesh::before {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
   pointer-events: none;
   background-image:
@@ -74,5 +71,6 @@ h6 {
     linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
   background-size: 36px 36px;
   mask-image: radial-gradient(circle at center, black 22%, transparent 85%);
-  opacity: 0.35;
+  opacity: 0.18;
+  z-index: -1;
 }

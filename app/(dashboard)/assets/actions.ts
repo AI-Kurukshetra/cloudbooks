@@ -4,8 +4,20 @@ import { revalidatePath } from "next/cache";
 
 import { requireActiveMembership } from "@/services/auth";
 import { deleteDocument, uploadRelatedDocument } from "@/services/documents";
-import { createAsset, deleteAsset, updateAsset } from "@/services/operations";
-import type { CreateAssetInput, DeleteAssetInput, UpdateAssetInput } from "@/validators/operations";
+import {
+  createAsset,
+  createInventoryItem,
+  createInventoryMovement,
+  deleteAsset,
+  updateAsset,
+} from "@/services/operations";
+import type {
+  CreateAssetInput,
+  CreateInventoryItemInput,
+  CreateInventoryMovementInput,
+  DeleteAssetInput,
+  UpdateAssetInput,
+} from "@/validators/operations";
 
 export async function createAssetAction(input: CreateAssetInput) {
   const result = await createAsset(input);
@@ -15,6 +27,18 @@ export async function createAssetAction(input: CreateAssetInput) {
 
 export async function updateAssetAction(input: UpdateAssetInput) {
   const result = await updateAsset(input);
+  revalidatePath("/assets");
+  return result;
+}
+
+export async function createInventoryItemAction(input: CreateInventoryItemInput) {
+  const result = await createInventoryItem(input);
+  revalidatePath("/assets");
+  return result;
+}
+
+export async function createInventoryMovementAction(input: CreateInventoryMovementInput) {
+  const result = await createInventoryMovement(input);
   revalidatePath("/assets");
   return result;
 }

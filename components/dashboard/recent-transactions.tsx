@@ -24,16 +24,24 @@ export function RecentTransactions({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((item) => (
-              <TableRow key={item.reference}>
-                <TableCell>{item.reference}</TableCell>
-                <TableCell>{item.type}</TableCell>
-                <TableCell>{item.amount}</TableCell>
-                <TableCell>
-                  <Badge variant={item.status === "Posted" ? "success" : "warning"}>{item.status}</Badge>
+            {items.length === 0 ? (
+              <TableRow>
+                <TableCell className="py-10 text-sm text-muted-foreground" colSpan={4}>
+                  No recent transactions found.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              items.map((item) => (
+                <TableRow key={item.reference}>
+                  <TableCell>{item.reference}</TableCell>
+                  <TableCell>{item.type}</TableCell>
+                  <TableCell>{item.amount}</TableCell>
+                  <TableCell>
+                    <Badge variant={item.status === "Posted" ? "success" : "warning"}>{item.status}</Badge>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </CardContent>

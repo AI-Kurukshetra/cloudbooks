@@ -1,4 +1,5 @@
 import { BankSyncImportCard } from "@/components/banking/bank-sync-import-card";
+import { BankRuleForm } from "@/components/banking/bank-rule-form";
 import {
   BankAccountForm,
   BankTransactionForm,
@@ -31,6 +32,10 @@ export default async function BankingPage() {
             <BankTransactionForm data={data} />
           </section>
           <section>
+            <h3 className="mb-4 text-lg font-semibold">Categorization rules</h3>
+            <BankRuleForm data={data} />
+          </section>
+          <section>
             <h3 className="mb-4 text-lg font-semibold">Reconciliations</h3>
             <ReconciliationForm data={data} />
           </section>
@@ -41,6 +46,7 @@ export default async function BankingPage() {
         <RecordsTableCard title="Bank transactions" description="Recent manually entered or synced transactions." rows={data.transactionRecords} />
         <RecordsTableCard title="Reconciliations" description="Recent reconciliation runs by statement date." rows={data.reconciliationRecords} />
       </div>
+      <RecordsTableCard title="Categorization rules" description="Active auto-categorization rules applied during bank feed import." rows={data.categorizationRuleRecords} />
     </div>
   );
 }

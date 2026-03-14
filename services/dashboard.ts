@@ -84,6 +84,20 @@ function ageBucket(dueDate: string | null | undefined, today: string) {
   return "61+";
 }
 
+function bucketForecastMonth(dueDate: string | null | undefined, fallbackKey: string, allowedKeys: Set<string>) {
+  if (!dueDate) {
+    return fallbackKey;
+  }
+  const key = monthKeyFromDate(dueDate);
+  if (allowedKeys.has(key)) {
+    return key;
+  }
+  if (key < fallbackKey) {
+    return fallbackKey;
+  }
+  return null;
+}
+
 export async function getDashboardSnapshot(
   membership: MembershipContext,
 ): Promise<DashboardSnapshot> {
@@ -386,6 +400,37 @@ export async function getDashboardSnapshot(
     };
   });
 
+  const currentCashBalance = cashSeries.reduce((sum, item) => sum + item.value, 0);
+  const forecastKeys = buildRollingMonths(today.slice(0, 7), 6);
+  const forecastKeySet = new Set(forecastKeys);
+  const inflowMap = new Map(forecastKeys.map((key) => [key, 0]));
+  const outflowMap = new Map(forecastKeys.map((key) => [key, 0]));
+
+  ((invoiceAgingResult.data ?? []) as DashboardInvoiceAgingRow[]).forEach((row) => {
+    const bucket = bucketForecastMonth(row.due_date, forecastKeys[0], forecastKeySet);
+    if (!bucket) return;
+    inflowMap.set(bucket, (inflowMap.get(bucket) ?? 0) + Number(row.outstanding_amount ?? 0));
+  });
+
+  ((billAgingResult.data ?? []) as DashboardInvoiceAgingRow[]).forEach((row) => {
+    const bucket = bucketForecastMonth(row.due_date, forecastKeys[0], forecastKeySet);
+    if (!bucket) return;
+    outflowMap.set(bucket, (outflowMap.get(bucket) ?? 0) + Number(row.outstanding_amount ?? 0));
+  });
+
+  let runningCash = currentCashBalance;
+  const cashForecast = forecastKeys.map((key) => {
+    const inflows = inflowMap.get(key) ?? 0;
+    const outflows = outflowMap.get(key) ?? 0;
+    runningCash += inflows - outflows;
+    return {
+      period: monthLabel(key),
+      inflows,
+      outflows,
+      endingCash: runningCash,
+    };
+  });
+
   const recentTransactions = ((recentJournalsResult.data ?? []) as DashboardJournalEntry[]).map(
     (journal: DashboardJournalEntry) => {
     const total = (journal.journal_lines ?? []).reduce(
@@ -429,6 +474,7 @@ export async function getDashboardSnapshot(
     ],
     revenueSeries: Array.from(revenueSeriesMap.entries()).map(([label, value]) => ({ label, value })),
     cashSeries,
+    cashForecast,
     trendSeries: Array.from(trendMap.values()),
     receivablesAging: Array.from(receivablesAgingMap.entries()).map(([label, value]) => ({ label, value })),
     payablesAging: Array.from(payablesAgingMap.entries()).map(([label, value]) => ({ label, value })),

@@ -28,16 +28,24 @@ export function RecordsTableCard({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell>{row.primary}</TableCell>
-                <TableCell className="capitalize">{row.secondary}</TableCell>
-                <TableCell>{row.tertiary}</TableCell>
-                <TableCell>
-                  <Badge variant={row.status === "active" ? "success" : "outline"}>{row.status}</Badge>
+            {rows.length === 0 ? (
+              <TableRow>
+                <TableCell className="py-10 text-sm text-muted-foreground" colSpan={4}>
+                  No records available yet.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              rows.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell>{row.primary}</TableCell>
+                  <TableCell className="capitalize">{row.secondary}</TableCell>
+                  <TableCell>{row.tertiary}</TableCell>
+                  <TableCell>
+                    <Badge variant={row.status === "active" ? "success" : "outline"}>{row.status}</Badge>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </CardContent>

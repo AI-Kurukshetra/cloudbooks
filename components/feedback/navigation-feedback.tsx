@@ -89,15 +89,6 @@ export function NavigationFeedback() {
           state === "finishing" && "scale-x-100 opacity-100",
         )}
       />
-      <div
-        className={cn(
-          "pointer-events-none fixed right-5 top-5 z-[100] rounded-full border border-white/70 bg-white/88 px-4 py-2 text-xs uppercase tracking-[0.28em] text-slate-700 shadow-soft backdrop-blur transition-all duration-300",
-          !visible && "translate-y-2 opacity-0",
-          visible && "translate-y-0 opacity-100",
-        )}
-      >
-        Loading page
-      </div>
     </>
   );
 }

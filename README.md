@@ -1,4 +1,4 @@
-# CloudBooks Pro MVP Scaffold
+# CloudBooks Pro
 
 CloudBooks Pro is a production-oriented scaffold for a multi-tenant cloud accounting SaaS built with Next.js, TypeScript, TailwindCSS, shadcn-style primitives, and Supabase.
 

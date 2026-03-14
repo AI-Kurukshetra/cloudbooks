@@ -1,22 +1,19 @@
 import { BalanceSheetCard } from "@/components/reports/balance-sheet-card";
 import { ProfitLossCard } from "@/components/reports/profit-loss-card";
 import { TrialBalanceCard } from "@/components/reports/trial-balance-card";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { WorkbenchPanel } from "@/components/workbench/workbench-panel";
 import { requireActiveMembership } from "@/services/auth";
 import {
   getBalanceSheetSnapshot,
   getProfitAndLossSnapshot,
-  getReportCatalog,
   getReportingWorkspaceSummary,
   getTrialBalanceSnapshot,
 } from "@/services/reports";
 
 export default async function ReportsPage() {
   const membership = await requireActiveMembership();
-  const [reportCatalog, summary, trialBalance, profitAndLoss, balanceSheet] = await Promise.all([
-    getReportCatalog(),
+  const [summary, trialBalance, profitAndLoss, balanceSheet] = await Promise.all([
     getReportingWorkspaceSummary(membership),
     getTrialBalanceSnapshot(membership),
     getProfitAndLossSnapshot(membership),
@@ -28,7 +25,7 @@ export default async function ReportsPage() {
       <WorkbenchPanel
         eyebrow="Reporting"
         title="Live statements from posted journals"
-        description="Every statement on this page is derived from the double-entry ledger in the active tenant scope. Static report shell content has been removed from the deployed surface."
+        description="Every statement on this page is derived from posted journals in the active tenant scope."
       >
         <div className="grid gap-4 lg:grid-cols-4">
           <Card className="border-white/60 bg-white/80">
@@ -74,25 +71,21 @@ export default async function ReportsPage() {
       <TrialBalanceCard snapshot={trialBalance} />
       <Card>
         <CardHeader>
-          <CardTitle>Reporting Delivery Map</CardTitle>
+          <CardTitle>Reporting Controls</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-3 md:grid-cols-2">
-          {reportCatalog.map((report) => (
-            <div key={report.id} className="rounded-[1.6rem] border border-stone-200/80 bg-secondary/35 p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-base font-semibold">{report.title}</p>
-                  <p className="mt-2 text-sm text-muted-foreground">{report.description}</p>
-                </div>
-                <Badge variant={report.status === "live" ? "success" : "outline"}>
-                  {report.status === "live" ? "Live" : "Queued"}
-                </Badge>
-              </div>
-              <p className="mt-3 text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                {report.cadence}
-              </p>
-            </div>
-          ))}
+        <CardContent className="grid gap-3 md:grid-cols-3">
+          <div className="rounded-[1.6rem] border border-stone-200/80 bg-secondary/35 p-4">
+            <p className="text-base font-semibold">Posting basis</p>
+            <p className="mt-2 text-sm text-muted-foreground">Reports include posted journal entries only.</p>
+          </div>
+          <div className="rounded-[1.6rem] border border-stone-200/80 bg-secondary/35 p-4">
+            <p className="text-base font-semibold">Tenant scope</p>
+            <p className="mt-2 text-sm text-muted-foreground">All queries are filtered to the active organization membership and entity scope.</p>
+          </div>
+          <div className="rounded-[1.6rem] border border-stone-200/80 bg-secondary/35 p-4">
+            <p className="text-base font-semibold">Statement date</p>
+            <p className="mt-2 text-sm text-muted-foreground">P&amp;L is year-to-date. Trial Balance and Balance Sheet are point-in-time snapshots.</p>
+          </div>
         </CardContent>
       </Card>
     </div>

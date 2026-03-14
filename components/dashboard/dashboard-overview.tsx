@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { AgingCard } from "@/components/dashboard/aging-card";
+import { CashForecastCard } from "@/components/dashboard/cash-forecast-card";
 import { CompositionCard } from "@/components/dashboard/composition-card";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
@@ -40,12 +41,12 @@ export function DashboardOverview({ initialData }: { initialData: DashboardSnaps
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
             <div className="rounded-[1.8rem] border border-white/10 bg-white/6 p-5 backdrop-blur">
-              <p className="text-xs uppercase tracking-[0.3em] text-stone-300">Control note</p>
-              <p className="mt-3 text-lg font-semibold">Every operational document resolves to journal lines.</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-stone-300">Ledger rule</p>
+              <p className="mt-3 text-lg font-semibold">Every financial document posts through the journal engine.</p>
             </div>
             <div className="rounded-[1.8rem] border border-white/10 bg-white/6 p-5 backdrop-blur">
-              <p className="text-xs uppercase tracking-[0.3em] text-stone-300">Posting stance</p>
-              <p className="mt-3 text-lg font-semibold">Balanced, membership-scoped, and reportable by entity.</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-stone-300">Access model</p>
+              <p className="mt-3 text-lg font-semibold">Data access is limited to the active organization membership and entity scope.</p>
             </div>
           </div>
         </div>
@@ -72,9 +73,9 @@ export function DashboardOverview({ initialData }: { initialData: DashboardSnaps
         </div>
         <div className="rounded-[1.8rem] border border-white/60 bg-white/78 p-6 shadow-soft">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Reporting</p>
-          <h4 className="mt-2 text-xl font-semibold">Trial balance live</h4>
+          <h4 className="mt-2 text-xl font-semibold">Review financial statements</h4>
           <p className="mt-3 text-sm text-muted-foreground">
-            Posted journals now feed the Trial Balance report directly, with P&amp;L and Balance Sheet ready to layer next.
+            Use reporting to review the Trial Balance, Profit &amp; Loss, and Balance Sheet generated from posted journals.
           </p>
         </div>
       </section>
@@ -82,11 +83,12 @@ export function DashboardOverview({ initialData }: { initialData: DashboardSnaps
         <TrendVisualCard points={data.trendSeries} />
         <AgingCard receivables={data.receivablesAging} payables={data.payablesAging} />
       </section>
+      <CashForecastCard points={data.cashForecast} />
       <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
         <CompositionCard revenueSeries={data.revenueSeries} cashSeries={data.cashSeries} />
         <div className="rounded-[2rem] border border-white/60 bg-[radial-gradient(circle_at_top_right,_rgba(14,116,144,0.14),_transparent_28%),linear-gradient(180deg,_rgba(255,255,255,1),_rgba(255,251,245,1))] p-6 shadow-soft">
-          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Operator cues</p>
-          <h4 className="mt-2 font-display text-3xl font-semibold">What to act on next</h4>
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Operational focus</p>
+          <h4 className="mt-2 font-display text-3xl font-semibold">Current priorities</h4>
           <div className="mt-5 grid gap-4">
             <div className="rounded-[1.5rem] border border-white/70 bg-white/76 p-5">
               <p className="text-sm font-semibold">Collect aging receivables</p>

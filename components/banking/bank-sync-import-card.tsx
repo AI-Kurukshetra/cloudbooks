@@ -16,36 +16,11 @@ type BankAccountLookup = {
   detail?: string;
 };
 
-const samplePayload = JSON.stringify(
-  [
-    {
-      transactionDate: "2026-03-12",
-      postedDate: "2026-03-13",
-      description: "Client settlement - Apex Capital",
-      amount: 12450,
-      direction: "credit",
-      status: "unmatched",
-      externalId: "feed-20260312-0001",
-    },
-    {
-      transactionDate: "2026-03-12",
-      postedDate: "2026-03-13",
-      description: "Operating disbursement - telecom",
-      amount: 328.42,
-      direction: "debit",
-      status: "review",
-      externalId: "feed-20260312-0002",
-    },
-  ],
-  null,
-  2,
-);
-
 export function BankSyncImportCard({ bankAccounts }: { bankAccounts: BankAccountLookup[] }) {
   const router = useRouter();
   const hasBankAccounts = bankAccounts.length > 0;
   const [bankAccountId, setBankAccountId] = useState(bankAccounts[0]?.id ?? "");
-  const [payloadText, setPayloadText] = useState(samplePayload);
+  const [payloadText, setPayloadText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -142,6 +117,7 @@ export function BankSyncImportCard({ bankAccounts }: { bankAccounts: BankAccount
         </div>
         <Textarea
           className="min-h-[280px] font-mono text-xs"
+          placeholder='[\n  {\n    "transactionDate": "2026-03-14",\n    "postedDate": "2026-03-14",\n    "description": "Bank feed transaction",\n    "amount": 1000,\n    "direction": "credit",\n    "status": "unmatched",\n    "externalId": "provider-reference"\n  }\n]'
           value={payloadText}
           onChange={(event) => setPayloadText(event.target.value)}
         />
@@ -150,9 +126,6 @@ export function BankSyncImportCard({ bankAccounts }: { bankAccounts: BankAccount
         <div className="flex flex-wrap items-center gap-3">
           <Button disabled={isPending || !bankAccountId || parsedCount === 0 || !hasBankAccounts} onClick={handleImport} type="button">
             {isPending ? "Importing..." : "Import transactions"}
-          </Button>
-          <Button type="button" variant="ghost" onClick={() => setPayloadText(samplePayload)}>
-            Reload sample payload
           </Button>
         </div>
       </CardContent>

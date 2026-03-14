@@ -23,6 +23,20 @@ export type RecentDocument = {
   date: string;
 };
 
+export type TaxRateOption = LookupOption & {
+  rate: number;
+};
+
+export type ReminderRecord = {
+  id: string;
+  invoiceNumber: string;
+  channel: string;
+  reminderType: string;
+  scheduledFor: string;
+  status: string;
+  payLinkUrl: string | null;
+};
+
 export type AttachmentDocument = {
   id: string;
   fileName: string;
@@ -39,9 +53,13 @@ export type InvoiceWorkbenchData = {
   customers: LookupOption[];
   arAccounts: AccountOption[];
   revenueAccounts: AccountOption[];
+  taxAccounts: AccountOption[];
+  taxRates: TaxRateOption[];
   periods: PeriodOption[];
   projects: LookupOption[];
   recentInvoices: RecentDocument[];
+  estimates: RecentDocument[];
+  reminders: ReminderRecord[];
   attachments: AttachmentDocument[];
 };
 
@@ -52,6 +70,8 @@ export type BillWorkbenchData = {
   vendors: LookupOption[];
   apAccounts: AccountOption[];
   expenseAccounts: AccountOption[];
+  taxAccounts: AccountOption[];
+  taxRates: TaxRateOption[];
   periods: PeriodOption[];
   projects: LookupOption[];
   recentBills: RecentDocument[];
